@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Games {
+  id           String @id @db.VarChar(255)
+  numQuestions Int
+  title        String @db.VarChar(255)
+  creatorId    String @db.VarChar(255)
+  Users        Users  @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "games_ibfk_1")
+}
+
+model Users {
+  id       String @id @db.VarChar(255)
+  email    String @db.VarChar(255)
+  password String @db.VarChar(255)
+  username String @db.VarChar(255)
+  Games    Games?
+}

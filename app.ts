@@ -1,9 +1,17 @@
 import express from "express";
+import cors from "cors";
+import GameRouter from "./routes/game";
+
 const app = express();
 
-import GameRouter from './routes/game'
+const allowedOrigins = ["*"];
 
+const options: cors.CorsOptions = {
+  origin: allowedOrigins,
+};
 
-app.use('/game', GameRouter)
+app.use(cors(options));
 
-export default app
+app.use("/game", GameRouter);
+
+export default app;

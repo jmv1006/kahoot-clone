@@ -5,6 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
-const game_controller_1 = __importDefault(require("../controllers/game-controller"));
-router.get('/', game_controller_1.default.create);
+const game_controller_1 = require("../controllers/game-controller");
+router.post('/', game_controller_1.create);
 exports.default = router;

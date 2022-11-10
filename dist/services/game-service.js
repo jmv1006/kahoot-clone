@@ -10,8 +10,5 @@ class GameService {
         }
         return this.instance;
     }
-    createGame(game) {
-        this.games.push(game);
-    }
 }
 exports.default = GameService;

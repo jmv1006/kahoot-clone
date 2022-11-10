@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import GameRouter from "./routes/game";
+import bodyParser from "body-parser";
 
 const app = express();
 
@@ -11,6 +12,8 @@ const options: cors.CorsOptions = {
 };
 
 app.use(cors(options));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.use("/games", GameRouter);
 

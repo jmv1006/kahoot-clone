@@ -8,11 +8,13 @@ datasource db {
 }
 
 model Games {
-  id           String @id @db.VarChar(255)
+  id           String      @id @db.VarChar(255)
   numQuestions Int
-  title        String @db.VarChar(255)
-  creatorId    String @db.VarChar(255)
-  Users        Users  @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "games_ibfk_1")
+  title        String      @db.VarChar(255)
+  creatorId    String      @db.VarChar(255)
+  Users        Users       @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "games_ibfk_1")
+  Answers      Answers[]
+  Questions    Questions[]
 }
 
 model Users {
@@ -21,4 +23,28 @@ model Users {
   password String @db.VarChar(255)
   username String @db.VarChar(255)
   Games    Games?
+}
+
+model Questions {
+  id          String    @id @db.VarChar(255)
+  text        String?   @db.VarChar(255)
+  num_answers Int?
+  game_id     String?   @db.VarChar(255)
+  Games       Games?    @relation(fields: [game_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "questions_ibfk_1")
+  Answers     Answers[]
+
+  @@index([game_id], map: "game_id")
+}
+
+model Answers {
+  id          String     @id @db.VarChar(255)
+  text        String?    @db.VarChar(255)
+  isCorrect   Boolean?
+  question_id String?    @db.VarChar(255)
+  game_id     String?    @db.VarChar(255)
+  Questions   Questions? @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "answers_ibfk_1")
+  Games       Games?     @relation(fields: [game_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "answers_ibfk_2")
+
+  @@index([game_id], map: "game_id")
+  @@index([question_id], map: "question_id")
 }

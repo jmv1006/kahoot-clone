@@ -17,13 +17,13 @@ class GameService {
     return allGames;
   }
 
-  create() {
+  async create(creatorId: string, title: string) {
     // numQuestions, creatorId, title
     const newGame: Game = {
       id: uuidv4(),
-      numQuestions: 1,
-      creatorId: "das",
-      title: "Fake title",
+      numQuestions: 0,
+      creatorId: creatorId,
+      title: title,
     };
 
     return newGame;

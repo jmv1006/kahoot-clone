@@ -27,15 +27,17 @@ class GameService {
             return allGames;
         });
     }
-    create() {
-        // numQuestions, creatorId, title
-        const newGame = {
-            id: (0, uuid_1.v4)(),
-            numQuestions: 1,
-            creatorId: "das",
-            title: "Fake title",
-        };
-        return newGame;
+    create(creatorId, title) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // numQuestions, creatorId, title
+            const newGame = {
+                id: (0, uuid_1.v4)(),
+                numQuestions: 0,
+                creatorId: creatorId,
+                title: title,
+            };
+            return newGame;
+        });
     }
 }
 exports.default = GameService;

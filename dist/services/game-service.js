@@ -27,6 +27,12 @@ class GameService {
             return allGames;
         });
     }
+    getOne(game_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const game = yield prisma_1.default.games.findUnique({ where: { id: game_id } });
+            return game;
+        });
+    }
     create(creatorId, title) {
         return __awaiter(this, void 0, void 0, function* () {
             // numQuestions, creatorId, title

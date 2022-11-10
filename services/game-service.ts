@@ -17,6 +17,11 @@ class GameService {
     return allGames;
   }
 
+  async getOne(game_id: string) {
+    const game = await client.games.findUnique({ where: { id: game_id } });
+    return game;
+  }
+
   async create(creatorId: string, title: string) {
     // numQuestions, creatorId, title
     const newGame: Game = {

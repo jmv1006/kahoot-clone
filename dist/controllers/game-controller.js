@@ -12,22 +12,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAll = exports.create = void 0;
+exports.getSpecific = exports.getAll = exports.create = void 0;
 const game_service_1 = __importDefault(require("../services/game-service"));
 const game_1 = __importDefault(require("../config/joi-schemas/game"));
+const prisma_1 = __importDefault(require("../config/prisma"));
+const builder_1 = require("../config/joi-schemas/builder");
 const gameService = game_service_1.default.getInstance();
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { error } = game_1.default.validate(req.body);
     if (error) {
         return res.status(400).json({ message: "Error with input" });
     }
-    /*
-    const creatorExists = client.users.findUnique({where: {id: req.body.creatorId}});
-  
+    const creatorExists = prisma_1.default.users.findUnique({
+        where: { id: req.body.creatorId },
+    });
     if (!creatorExists) {
-      return res.status(401).json({message: "Could not find registered user with given id"})
+        return res
+            .status(401)
+            .json({ message: "Could not find registered user with given id" });
     }
-    */
     const created = yield gameService.create(req.body.creatorId, req.body.title);
     res.status(200).json({ data: { game: created } });
 });
@@ -37,3 +40,14 @@ const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json({ data: games });
 });
 exports.getAll = getAll;
+const getSpecific = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const schema = (0, builder_1.schemaBuilder)([{ name: "game_id", required: true }]);
+    const { error } = schema.validate(req.body);
+    if (error)
+        return res.status(400).json({ message: "Invalid input" });
+    //const game = gameService.getOne(req.body.game_id)
+    //if(!game) return res.status(400).json({message: "Could not find game"})
+    //return res.status(200).json({game: game})
+    return res.send("ge");
+});
+exports.getSpecific = getSpecific;

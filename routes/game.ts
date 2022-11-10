@@ -1,7 +1,8 @@
 import express from "express";
 const router = express.Router();
-import { create } from "../controllers/game-controller";
+import { create, getAll } from "../controllers/game-controller";
 
+router.get("/", getAll);
 router.post("/", create);
 
 export default router;

@@ -8,9 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.create = void 0;
+exports.getAll = exports.create = void 0;
+const game_service_1 = __importDefault(require("../services/game-service"));
+const gameService = game_service_1.default.getInstance();
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send("create game");
+    const created = gameService.create();
+    res.status(200).json({ data: { game: created } });
 });
 exports.create = create;
+const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const games = yield gameService.getAll();
+    res.json({ data: games });
+});
+exports.getAll = getAll;

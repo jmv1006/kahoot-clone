@@ -12,6 +12,6 @@ const options: cors.CorsOptions = {
 
 app.use(cors(options));
 
-app.use("/game", GameRouter);
+app.use("/games", GameRouter);
 
 export default app;

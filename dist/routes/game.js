@@ -6,5 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const game_controller_1 = require("../controllers/game-controller");
-router.post('/', game_controller_1.create);
+router.get("/", game_controller_1.getAll);
+router.post("/", game_controller_1.create);
 exports.default = router;

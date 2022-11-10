@@ -5,12 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const app = (0, express_1.default)();
 const game_1 = __importDefault(require("./routes/game"));
-const allowedOrigins = ['*'];
+const app = (0, express_1.default)();
+const allowedOrigins = ["*"];
 const options = {
-    origin: allowedOrigins
+    origin: allowedOrigins,
 };
 app.use((0, cors_1.default)(options));
-app.use('/game', game_1.default);
+app.use("/games", game_1.default);
 exports.default = app;

@@ -41,13 +41,17 @@ const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.getAll = getAll;
 const getSpecific = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const schema = (0, builder_1.schemaBuilder)([{ name: "game_id", required: true }]);
+    const schema = (0, builder_1.schemaBuilder)([
+        { name: "game_id", required: true, min: null, max: null },
+    ]);
     const { error } = schema.validate(req.body);
     if (error)
         return res.status(400).json({ message: "Invalid input" });
-    //const game = gameService.getOne(req.body.game_id)
-    //if(!game) return res.status(400).json({message: "Could not find game"})
-    //return res.status(200).json({game: game})
-    return res.send("ge");
+    const game = gameService.getOne(req.body.game_id);
+    if (!game)
+        return res
+            .status(400)
+            .json({ message: "Could not find game with provided id" });
+    return res.status(200).json({ game: game });
 });
 exports.getSpecific = getSpecific;

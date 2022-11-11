@@ -37,12 +37,17 @@ export const getAll = async (req: Request, res: Response) => {
 };
 
 export const getSpecific = async (req: Request, res: Response) => {
-  const schema = schemaBuilder([{ name: "game_id", required: true }]);
+  const schema = schemaBuilder([
+    { name: "game_id", required: true, min: null, max: null },
+  ]);
   const { error } = schema.validate(req.body);
 
   if (error) return res.status(400).json({ message: "Invalid input" });
-  
-  const game = gameService.getOne(req.body.game_id)
-  if(!game) return res.status(400).json({message: "Could not find game"})
-  return res.status(200).json({game: game})
+
+  const game = gameService.getOne(req.body.game_id);
+  if (!game)
+    return res
+      .status(400)
+      .json({ message: "Could not find game with provided id" });
+  return res.status(200).json({ game: game });
 };

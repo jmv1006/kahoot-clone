@@ -21,7 +21,7 @@ const gameService = game_service_1.default.getInstance();
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { error } = game_1.default.validate(req.body);
     if (error) {
-        return res.status(400).json({ message: "Error with input" });
+        return res.status(400).json({ message: 'Error with input' });
     }
     const creatorExists = prisma_1.default.users.findUnique({
         where: { id: req.body.creatorId },
@@ -29,7 +29,7 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!creatorExists) {
         return res
             .status(401)
-            .json({ message: "Could not find registered user with given id" });
+            .json({ message: 'Could not find registered user with given id' });
     }
     const created = yield gameService.create(req.body.creatorId, req.body.title);
     res.status(200).json({ data: { game: created } });
@@ -42,16 +42,16 @@ const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getAll = getAll;
 const getSpecific = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const schema = (0, builder_1.schemaBuilder)([
-        { name: "game_id", required: true, min: null, max: null },
+        { name: 'game_id', required: true, min: null, max: null },
     ]);
     const { error } = schema.validate(req.body);
     if (error)
-        return res.status(400).json({ message: "Invalid input" });
+        return res.status(400).json({ message: 'Invalid input' });
     const game = gameService.getOne(req.body.game_id);
     if (!game)
         return res
             .status(400)
-            .json({ message: "Could not find game with provided id" });
+            .json({ message: 'Could not find game with provided id' });
     return res.status(200).json({ game: game });
 });
 exports.getSpecific = getSpecific;

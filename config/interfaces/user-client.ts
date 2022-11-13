@@ -2,9 +2,9 @@
 // Differs from DB user model because there is no password field!
 
 interface UserClient {
-  id: string;
-  email: string;
-  username: string;
+   id: string;
+   email: string;
+   username: string;
 }
 
 export default UserClient;

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_1 = __importDefault(require("../config/prisma"));
 const uuid_1 = require("uuid");
+const bcryptjs_1 = require("bcryptjs");
 class UserService {
     static getInstance() {
         if (!this.instance) {
@@ -29,8 +30,18 @@ class UserService {
     }
     create(userInfo) {
         return __awaiter(this, void 0, void 0, function* () {
-            const id = (0, uuid_1.v4)();
-            return { id: id, username: userInfo.username, email: userInfo.email };
+            (0, bcryptjs_1.genSalt)(10, (err, salt) => {
+                (0, bcryptjs_1.hash)(userInfo.password, salt, (err, hash) => {
+                    const createdUser = {
+                        id: (0, uuid_1.v4)(),
+                        username: userInfo.username,
+                        email: userInfo.email,
+                        password: hash,
+                    };
+                    //insert hash into db
+                    return createdUser;
+                });
+            });
         });
     }
 }

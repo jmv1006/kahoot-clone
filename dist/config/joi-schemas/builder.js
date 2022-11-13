@@ -12,7 +12,7 @@ const schemaBuilder = (params) => {
         if (param.required) {
             if (param.min && param.max) {
                 schema = schema.append({
-                    ["" + param.name]: joi_1.default.string()
+                    ['' + param.name]: joi_1.default.string()
                         .min(param.min)
                         .max(param.max)
                         .required(),
@@ -20,35 +20,37 @@ const schemaBuilder = (params) => {
             }
             else if (param.min) {
                 schema = schema.append({
-                    ["" + param.name]: joi_1.default.string().min(param.min).required(),
+                    ['' + param.name]: joi_1.default.string().min(param.min).required(),
                 });
             }
             else if (param.max) {
                 schema = schema.append({
-                    ["" + param.name]: joi_1.default.string().max(param.max).required(),
+                    ['' + param.name]: joi_1.default.string().max(param.max).required(),
                 });
             }
             else
-                schema = schema.append({ ["" + param.name]: joi_1.default.string().required() });
+                schema = schema.append({
+                    ['' + param.name]: joi_1.default.string().required(),
+                });
         }
         else {
             if (param.min && param.max) {
                 schema = schema.append({
-                    ["" + param.name]: joi_1.default.string().min(param.min).max(param.max),
+                    ['' + param.name]: joi_1.default.string().min(param.min).max(param.max),
                 });
             }
             else if (param.min) {
                 schema = schema.append({
-                    ["" + param.name]: joi_1.default.string().min(param.min),
+                    ['' + param.name]: joi_1.default.string().min(param.min),
                 });
             }
             else if (param.max) {
                 schema = schema.append({
-                    ["" + param.name]: joi_1.default.string().max(param.max),
+                    ['' + param.name]: joi_1.default.string().max(param.max),
                 });
             }
             else
-                schema = schema.append({ ["" + param.name]: joi_1.default.string() });
+                schema = schema.append({ ['' + param.name]: joi_1.default.string() });
         }
     }
     return schema;

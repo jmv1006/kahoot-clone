@@ -1,49 +1,41 @@
 import { Request, Response } from 'express';
-import client from '../config/prisma';
+import Question from '../config/interfaces/question';
 import QuestionService from '../services/question-service';
+import NewQuestionSchema from '../config/joi-schemas/question-answer';
+import QuestionAnswerValidator from '../helpers/question-answer-validator';
 
-interface AnswerRequestObj {
-   text: string;
-   isCorrect: boolean;
-   gameId: string;
-   questionId: string | null;
+interface NewAnswerRequestObj {
+  text: string;
+  isCorrect: boolean;
+  gameId: string;
+  questionId: string | null;
 }
 
-interface QuestionRequestObj {
-   text: string;
-   gameId: string;
-   answers: Array<AnswerRequestObj>;
+interface NewQuestionRequestObj {
+  text: string;
+  gameId: string;
+  answers: Array<NewAnswerRequestObj>;
 }
 
 const questionService = QuestionService.getInstance();
 
-export const getGameQuestions = async (req: Request, res: Response) => {
-   const gameId: string = req.params.gameId;
-
-   const gameExists = await client.games.findUnique({ where: { id: gameId } });
-   if (!gameExists)
-      return res
-         .status(400)
-         .json({ message: 'Game with provided id does not exist' });
-};
-
 export const createQuestions = async (req: Request, res: Response) => {
-   const gameId = req.params.gameId;
+  const { error } = NewQuestionSchema.validate(req.body);
+  if (error) return res.status(400).json({ message: 'Invalid input' });
 
-   const gameExists = await client.games.findUnique({ where: { id: gameId } });
-   if (!gameExists)
-      return res
-         .status(400)
-         .json({ message: 'Game with provided id does not exist' });
+  const questions: Array<NewQuestionRequestObj> = req.body.questions;
 
-   const questions: Array<QuestionRequestObj> = req.body.questions;
+  let answersValid = true;
+  questions.forEach((question: NewQuestionRequestObj) => {
+    const valid = QuestionAnswerValidator(question.answers);
+    if (!valid) answersValid = false;
+  });
 
-   questions.forEach((question: QuestionRequestObj) => {
-      questionService.createQuestion(
-         { gameId: question.gameId, text: question.text, numAnswers: 0 },
-         question.answers
-      );
-   });
+  if (!answersValid) return res.status(400).json({ message: 'Provided answers are not correct' });
 
-   //questionService.createQuestion({gameId:"sadsaddsa", text: "dsadas", numAnswers: 0}, [{text: "1", isCorrect: true, gameId: req.params.gameId, questionId: null}])
+  questions.forEach(async (question: NewQuestionRequestObj) => {
+    questionService.createQuestion({ gameId: question.gameId, text: question.text, numAnswers: 0 }, question.answers);
+  });
+
+  return res.status(200).json({ message: 'Success' });
 };

@@ -12,10 +12,7 @@ const schemaBuilder = (params) => {
         if (param.required) {
             if (param.min && param.max) {
                 schema = schema.append({
-                    ['' + param.name]: joi_1.default.string()
-                        .min(param.min)
-                        .max(param.max)
-                        .required(),
+                    ['' + param.name]: joi_1.default.string().min(param.min).max(param.max).required(),
                 });
             }
             else if (param.min) {

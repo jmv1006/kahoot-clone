@@ -17,21 +17,17 @@ class QuestionService {
         }
         return this.instance;
     }
-    getQuestion(id) {
-        const question = id; // check if question exists in db
-        const answers = []; // get answers where answer.id === question.id
-        return { question, answers };
-    }
     createQuestion(input, answers) {
         return __awaiter(this, void 0, void 0, function* () {
             const newQuestion = {
                 id: (0, uuid_1.v4)(),
                 gameId: input.gameId,
                 text: input.text,
-                numAnswers: input.numAnswers
+                numAnswers: input.numAnswers,
             };
             const newAnswers = yield this.createAnswers(answers, newQuestion.id);
             newQuestion.numAnswers = newAnswers.length;
+            //insert newQuestion into DB
             return newQuestion;
         });
     }
@@ -44,9 +40,8 @@ class QuestionService {
                     questionId: questionId,
                     gameId: answer.gameId,
                     isCorrect: answer.isCorrect,
-                    text: answer.text
+                    text: answer.text,
                 };
-                //insert newAnswer into db
                 res.push(newAnswer);
             });
             return res;

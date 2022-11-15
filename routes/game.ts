@@ -1,9 +1,13 @@
 import express from 'express';
 const router = express.Router();
-import { create, getAll, getSpecific } from '../controllers/game-controller';
+import {
+   createGame,
+   getAll,
+   getSpecific,
+} from '../controllers/game-controller';
 
 router.get('/', getAll);
-router.post('/', create);
+router.post('/', createGame);
 
 router.get('/:id', getSpecific);
 

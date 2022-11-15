@@ -1,8 +1,17 @@
-interface Question {
-   id: string | null;
+import { v4 as uuidv4 } from 'uuid';
+import Question from '../config/interfaces/question';
+import Answer from '../config/interfaces/answer';
+interface QuestionInput {
    gameId: string;
    text: string;
-   numAnswers: string | number;
+   numAnswers: number;
+}
+
+interface AnswerInput {
+   text: string;
+   isCorrect: boolean;
+   gameId: string;
+   questionId: string | null;
 }
 
 class QuestionService {
@@ -20,6 +29,41 @@ class QuestionService {
       const answers: Array<any> = []; // get answers where answer.id === question.id
 
       return { question, answers };
+   }
+
+   async createQuestion(input: QuestionInput, answers: Array<AnswerInput>) {
+      const newQuestion: Question = {
+         id: uuidv4(),
+         gameId: input.gameId,
+         text: input.text,
+         numAnswers: input.numAnswers,
+      };
+
+      const newAnswers = await this.createAnswers(answers, newQuestion.id);
+      newQuestion.numAnswers = newAnswers.length;
+      return newQuestion;
+   }
+
+   private async createAnswers(
+      answers: Array<AnswerInput>,
+      questionId: string
+   ): Promise<Array<Answer>> {
+      const res: Array<Answer> = [];
+
+      answers.forEach((answer: AnswerInput) => {
+         const newAnswer: Answer = {
+            id: uuidv4(),
+            questionId: questionId,
+            gameId: answer.gameId,
+            isCorrect: answer.isCorrect,
+            text: answer.text,
+         };
+
+         //insert newAnswer into db
+         res.push(newAnswer);
+      });
+
+      return res;
    }
 }
 

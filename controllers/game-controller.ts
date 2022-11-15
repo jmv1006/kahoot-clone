@@ -6,7 +6,7 @@ import client from '../config/prisma';
 import { schemaBuilder } from '../config/joi-schemas/builder';
 const gameService: GameService = GameService.getInstance();
 
-export const create = async (req: Request, res: Response) => {
+export const createGame = async (req: Request, res: Response) => {
    const { error } = newGameSchema.validate(req.body);
 
    if (error) {

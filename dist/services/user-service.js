@@ -31,7 +31,7 @@ class UserService {
     create(userInfo) {
         return __awaiter(this, void 0, void 0, function* () {
             (0, bcryptjs_1.genSalt)(10, (err, salt) => {
-                (0, bcryptjs_1.hash)(userInfo.password, salt, (err, hash) => {
+                (0, bcryptjs_1.hash)(userInfo.password, salt, (err, hash) => __awaiter(this, void 0, void 0, function* () {
                     const createdUser = {
                         id: (0, uuid_1.v4)(),
                         username: userInfo.username,
@@ -39,8 +39,9 @@ class UserService {
                         password: hash,
                     };
                     //insert hash into db
-                    return createdUser;
-                });
+                    const newUser = yield prisma_1.default.users.create({ data: createdUser });
+                    return newUser;
+                }));
             });
         });
     }

@@ -28,7 +28,7 @@ class UserService {
 
    async create(userInfo: INewUser) {
       genSalt(10, (err, salt) => {
-         hash(userInfo.password, salt, (err, hash) => {
+         hash(userInfo.password, salt, async (err, hash) => {
             const createdUser: CreatedUser = {
                id: uuidv4(),
                username: userInfo.username,
@@ -36,7 +36,8 @@ class UserService {
                password: hash,
             };
             //insert hash into db
-            return createdUser;
+            const newUser = await client.users.create({ data: createdUser });
+            return newUser;
          });
       });
    }

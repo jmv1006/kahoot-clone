@@ -23,7 +23,7 @@ const createGame = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     if (error) {
         return res.status(400).json({ message: 'Error with input' });
     }
-    const creatorExists = prisma_1.default.users.findUnique({
+    const creatorExists = yield prisma_1.default.users.findUnique({
         where: { id: req.body.creatorId },
     });
     if (!creatorExists) {

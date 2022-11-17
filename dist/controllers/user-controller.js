@@ -40,13 +40,11 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
     if (userExists)
         return res.status(400).json({ message: 'user with provided email already exists' });
-    const newUser = userService.create({
+    const newUser = yield userService.create({
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
     });
-    if (!newUser)
-        return res.status(500).json({ message: 'Server Error. Could not create new user.' });
     return res.status(200).json({ user: newUser });
 });
 exports.create = create;

@@ -23,13 +23,16 @@ class GameService {
   }
 
   async create(creatorId: string, title: string) {
-    // numQuestions, creatorId, title
     const newGame: Game = {
       id: uuidv4(),
       numQuestions: 0,
       creatorId: creatorId,
       title: title,
     };
+
+    await client.games.create({
+      data: { id: newGame.id, numQuestions: 0, creatorId: newGame.creatorId, title: newGame.title },
+    });
 
     return newGame;
   }

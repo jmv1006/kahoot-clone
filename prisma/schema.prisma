@@ -12,17 +12,19 @@ model Games {
   numQuestions Int
   title        String      @db.VarChar(255)
   creatorId    String      @db.VarChar(255)
-  Users        Users       @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "games_ibfk_1")
+  Users        Users       @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_id")
   Answers      Answers[]
   Questions    Questions[]
+
+  @@index([creatorId], map: "fk_user_id")
 }
 
 model Users {
-  id       String @id @db.VarChar(255)
-  email    String @db.VarChar(255)
-  password String @db.VarChar(255)
-  username String @db.VarChar(255)
-  Games    Games?
+  id       String  @id @db.VarChar(255)
+  email    String  @db.VarChar(255)
+  password String  @db.VarChar(255)
+  username String  @db.VarChar(255)
+  Games    Games[]
 }
 
 model Questions {

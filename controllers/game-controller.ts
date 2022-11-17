@@ -13,7 +13,7 @@ export const createGame = async (req: Request, res: Response) => {
     return res.status(400).json({ message: 'Error with input' });
   }
 
-  const creatorExists = client.users.findUnique({
+  const creatorExists = await client.users.findUnique({
     where: { id: req.body.creatorId },
   });
 

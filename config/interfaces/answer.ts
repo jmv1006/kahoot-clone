@@ -1,9 +1,9 @@
 interface Answer {
-  id: string | null;
+  id: string;
   text: string;
   isCorrect: boolean;
-  gameId: string;
-  questionId: string;
+  game_id: string;
+  question_id: string;
 }
 
 export default Answer;

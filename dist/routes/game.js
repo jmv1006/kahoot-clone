@@ -8,5 +8,4 @@ const router = express_1.default.Router();
 const game_controller_1 = require("../controllers/game-controller");
 router.get('/', game_controller_1.getAll);
 router.post('/', game_controller_1.createGame);
-router.get('/:id', game_controller_1.getSpecific);
 exports.default = router;

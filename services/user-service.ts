@@ -35,7 +35,7 @@ class UserService {
           email: userInfo.email,
           password: hash,
         };
-        //insert hash into db
+
         const newUser = await client.users.create({ data: createdUser });
         return newUser;
       });

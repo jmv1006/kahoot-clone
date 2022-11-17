@@ -8,8 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const uuid_1 = require("uuid");
+const prisma_1 = __importDefault(require("../config/prisma"));
 class QuestionService {
     static getInstance() {
         if (!this.instance) {
@@ -20,31 +24,39 @@ class QuestionService {
     createQuestion(input, answers) {
         return __awaiter(this, void 0, void 0, function* () {
             const newQuestion = {
-                id: (0, uuid_1.v4)(),
-                gameId: input.gameId,
+                //id: uuidv4(),
+                id: "050958d8-707c-4009-b845-3d68d2171b4e",
+                game_id: input.gameId,
                 text: input.text,
-                numAnswers: input.numAnswers,
+                num_answers: input.numAnswers,
             };
-            const newAnswers = yield this.createAnswers(answers, newQuestion.id);
-            newQuestion.numAnswers = newAnswers.length;
-            //insert newQuestion into DB
+            const answerCount = yield this.createAnswers(answers, newQuestion.id);
+            console.log(answerCount);
+            newQuestion['num_answers'] = answerCount;
+            //await client.questions.create({data: newQuestion})
             return newQuestion;
         });
     }
     createAnswers(answers, questionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = [];
-            answers.forEach((answer) => {
+            answers.forEach((answer) => __awaiter(this, void 0, void 0, function* () {
                 const newAnswer = {
                     id: (0, uuid_1.v4)(),
-                    questionId: questionId,
-                    gameId: answer.gameId,
+                    question_id: questionId,
+                    game_id: answer.gameId,
                     isCorrect: answer.isCorrect,
                     text: answer.text,
                 };
-                res.push(newAnswer);
-            });
-            return res;
+                //await client.answers.create({data: newAnswer})
+            }));
+            const answerCount = yield prisma_1.default.answers.count({ where: { question_id: questionId } });
+            return answerCount;
+        });
+    }
+    getGameQuestions(gameId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const questions = yield prisma_1.default.questions.findMany({ where: { game_id: gameId } });
+            return questions;
         });
     }
 }

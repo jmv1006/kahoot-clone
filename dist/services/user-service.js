@@ -38,7 +38,6 @@ class UserService {
                         email: userInfo.email,
                         password: hash,
                     };
-                    //insert hash into db
                     const newUser = yield prisma_1.default.users.create({ data: createdUser });
                     return newUser;
                 }));

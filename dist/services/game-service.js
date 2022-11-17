@@ -42,6 +42,7 @@ class GameService {
                 creatorId: creatorId,
                 title: title,
             };
+            yield prisma_1.default.games.create({ data: { id: newGame.id, numQuestions: 0, creatorId: newGame.creatorId, title: newGame.title } });
             return newGame;
         });
     }

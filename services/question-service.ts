@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import Question from '../config/interfaces/question';
 import Answer from '../config/interfaces/answer';
+import client from '../config/prisma';
 interface QuestionInput {
   gameId: string;
   text: string;
@@ -11,7 +12,6 @@ interface AnswerInput {
   text: string;
   isCorrect: boolean;
   gameId: string;
-  questionId: string | null;
 }
 
 class QuestionService {
@@ -27,32 +27,37 @@ class QuestionService {
   async createQuestion(input: QuestionInput, answers: Array<AnswerInput>) {
     const newQuestion: Question = {
       id: uuidv4(),
-      gameId: input.gameId,
+      game_id: input.gameId,
       text: input.text,
-      numAnswers: input.numAnswers,
+      num_answers: input.numAnswers,
     };
 
-    const newAnswers = await this.createAnswers(answers, newQuestion.id);
-    newQuestion.numAnswers = newAnswers.length;
-    //insert newQuestion into DB
+    const answerCount = await this.createAnswers(answers, newQuestion.id);
+    newQuestion['num_answers'] = answerCount;
+    await client.questions.create({ data: newQuestion });
+
     return newQuestion;
   }
 
-  private async createAnswers(answers: Array<AnswerInput>, questionId: string): Promise<Array<Answer>> {
-    const res: Array<Answer> = [];
-
-    answers.forEach((answer: AnswerInput) => {
+  private async createAnswers(answers: Array<AnswerInput>, questionId: string): Promise<number> {
+    answers.forEach(async (answer: AnswerInput) => {
       const newAnswer: Answer = {
         id: uuidv4(),
-        questionId: questionId,
-        gameId: answer.gameId,
+        question_id: questionId,
+        game_id: answer.gameId,
         isCorrect: answer.isCorrect,
         text: answer.text,
       };
-      res.push(newAnswer);
+      await client.answers.create({ data: newAnswer });
     });
 
-    return res;
+    const answerCount = await client.answers.count({ where: { question_id: questionId } });
+    return answerCount;
+  }
+
+  async getGameQuestions(gameId: string) {
+    const questions = await client.questions.findMany({ where: { game_id: gameId } });
+    return questions;
   }
 }
 

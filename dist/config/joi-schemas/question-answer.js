@@ -13,7 +13,6 @@ const NewQuestionSchema = joi_1.default.object({
             text: joi_1.default.string().min(1).max(255).required(),
             isCorrect: joi_1.default.boolean().required(),
             gameId: joi_1.default.string().required(),
-            questionId: joi_1.default.required(),
         }),
     }),
 });

@@ -1,8 +1,8 @@
 interface Question {
   id: string;
-  gameId: string;
+  game_id: string;
   text: string;
-  numAnswers: number;
+  num_answers: number;
 }
 
 export default Question;

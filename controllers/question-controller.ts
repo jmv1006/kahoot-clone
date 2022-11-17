@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import Question from '../config/interfaces/question';
 import QuestionService from '../services/question-service';
 import NewQuestionSchema from '../config/joi-schemas/question-answer';
 import QuestionAnswerValidator from '../helpers/question-answer-validator';
@@ -38,4 +37,9 @@ export const createQuestions = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({ message: 'Success' });
+};
+
+export const getGameQuestions = async (req: Request, res: Response) => {
+  const questions = await questionService.getGameQuestions(req.params.gameId);
+  return res.status(200).json({ questions: questions });
 };

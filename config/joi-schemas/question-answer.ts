@@ -9,7 +9,6 @@ const NewQuestionSchema = Joi.object({
       text: Joi.string().min(1).max(255).required(),
       isCorrect: Joi.boolean().required(),
       gameId: Joi.string().required(),
-      questionId: Joi.required(),
     }),
   }),
 });

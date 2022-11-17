@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createQuestions = void 0;
+exports.getGameQuestions = exports.createQuestions = void 0;
 const question_service_1 = __importDefault(require("../services/question-service"));
 const question_answer_1 = __importDefault(require("../config/joi-schemas/question-answer"));
 const question_answer_validator_1 = __importDefault(require("../helpers/question-answer-validator"));
@@ -36,3 +36,8 @@ const createQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function
     return res.status(200).json({ message: 'Success' });
 });
 exports.createQuestions = createQuestions;
+const getGameQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const questions = yield questionService.getGameQuestions(req.params.gameId);
+    return res.status(200).json({ questions: questions });
+});
+exports.getGameQuestions = getGameQuestions;

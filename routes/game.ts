@@ -7,7 +7,7 @@ import checkGameExists from '../middleware/gameExists';
 router.get('/', getAll);
 router.post('/', createGame);
 
-router.get('/:gameId/questions', checkGameExists, getGameQuestions)
-router.post('/:gameId/questions', checkGameExists, createQuestions)
+router.get('/:gameId/questions', checkGameExists, getGameQuestions);
+router.post('/:gameId/questions', checkGameExists, createQuestions);
 
 export default router;

@@ -40,6 +40,7 @@ export const createQuestions = async (req: Request, res: Response) => {
 };
 
 export const getGameQuestions = async (req: Request, res: Response) => {
-  const questions = await questionService.getGameQuestions(req.params.gameId);
-  return res.status(200).json({ questions: questions });
+  const questionsAndAnswers = await questionService.getGameQuestions(req.params.gameId);
+
+  return res.status(200).json({ questions: questionsAndAnswers });
 };

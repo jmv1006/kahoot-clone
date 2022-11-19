@@ -35,14 +35,15 @@ class GameService {
     }
     create(creatorId, title) {
         return __awaiter(this, void 0, void 0, function* () {
-            // numQuestions, creatorId, title
             const newGame = {
                 id: (0, uuid_1.v4)(),
                 numQuestions: 0,
                 creatorId: creatorId,
                 title: title,
             };
-            yield prisma_1.default.games.create({ data: { id: newGame.id, numQuestions: 0, creatorId: newGame.creatorId, title: newGame.title } });
+            yield prisma_1.default.games.create({
+                data: { id: newGame.id, numQuestions: 0, creatorId: newGame.creatorId, title: newGame.title },
+            });
             return newGame;
         });
     }

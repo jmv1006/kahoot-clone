@@ -14,6 +14,11 @@ interface AnswerInput {
   gameId: string;
 }
 
+interface QuestionModule {
+  question: Question;
+  answers: Array<Answer>;
+}
+
 class QuestionService {
   private static instance: QuestionService;
 
@@ -57,7 +62,16 @@ class QuestionService {
 
   async getGameQuestions(gameId: string) {
     const questions = await client.questions.findMany({ where: { game_id: gameId } });
-    return questions;
+    const answers = await client.answers.findMany({ where: { game_id: gameId } });
+
+    const res: Array<QuestionModule> = [];
+
+    questions.forEach(async (question: Question) => {
+      const answersToQuestion = answers.filter((answer: Answer) => answer.question_id == question.id);
+      res.push({ question, answers: answersToQuestion });
+    });
+
+    return res;
   }
 }
 

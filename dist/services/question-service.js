@@ -24,16 +24,14 @@ class QuestionService {
     createQuestion(input, answers) {
         return __awaiter(this, void 0, void 0, function* () {
             const newQuestion = {
-                //id: uuidv4(),
-                id: "050958d8-707c-4009-b845-3d68d2171b4e",
+                id: (0, uuid_1.v4)(),
                 game_id: input.gameId,
                 text: input.text,
                 num_answers: input.numAnswers,
             };
             const answerCount = yield this.createAnswers(answers, newQuestion.id);
-            console.log(answerCount);
             newQuestion['num_answers'] = answerCount;
-            //await client.questions.create({data: newQuestion})
+            yield prisma_1.default.questions.create({ data: newQuestion });
             return newQuestion;
         });
     }
@@ -47,7 +45,7 @@ class QuestionService {
                     isCorrect: answer.isCorrect,
                     text: answer.text,
                 };
-                //await client.answers.create({data: newAnswer})
+                yield prisma_1.default.answers.create({ data: newAnswer });
             }));
             const answerCount = yield prisma_1.default.answers.count({ where: { question_id: questionId } });
             return answerCount;
@@ -56,7 +54,13 @@ class QuestionService {
     getGameQuestions(gameId) {
         return __awaiter(this, void 0, void 0, function* () {
             const questions = yield prisma_1.default.questions.findMany({ where: { game_id: gameId } });
-            return questions;
+            const answers = yield prisma_1.default.answers.findMany({ where: { game_id: gameId } });
+            const res = [];
+            questions.forEach((question) => __awaiter(this, void 0, void 0, function* () {
+                const answersToQuestion = answers.filter((answer) => answer.question_id == question.id);
+                res.push({ question, answers: answersToQuestion });
+            }));
+            return res;
         });
     }
 }

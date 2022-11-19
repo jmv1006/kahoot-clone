@@ -37,7 +37,7 @@ const createQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function
 });
 exports.createQuestions = createQuestions;
 const getGameQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const questions = yield questionService.getGameQuestions(req.params.gameId);
-    return res.status(200).json({ questions: questions });
+    const questionsAndAnswers = yield questionService.getGameQuestions(req.params.gameId);
+    return res.status(200).json({ questions: questionsAndAnswers });
 });
 exports.getGameQuestions = getGameQuestions;

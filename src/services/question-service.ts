@@ -2,16 +2,17 @@ import { v4 as uuidv4 } from 'uuid';
 import Question from '../config/interfaces/question';
 import Answer from '../config/interfaces/answer';
 import client from '../config/prisma';
+import { UpdatedAnswer, UpdatedQuestion } from '../config/interfaces/updated-question-answer';
+
 interface QuestionInput {
-  gameId: string;
+  game_id: string;
   text: string;
-  numAnswers: number;
 }
 
 interface AnswerInput {
   text: string;
   isCorrect: boolean;
-  gameId: string;
+  game_id: string;
 }
 
 interface QuestionModule {
@@ -32,9 +33,9 @@ class QuestionService {
   async createQuestion(input: QuestionInput, answers: Array<AnswerInput>) {
     const newQuestion: Question = {
       id: uuidv4(),
-      game_id: input.gameId,
+      game_id: input.game_id,
       text: input.text,
-      num_answers: input.numAnswers,
+      num_answers: answers.length,
     };
 
     const answerCount = await this.createAnswers(answers, newQuestion.id);
@@ -49,7 +50,7 @@ class QuestionService {
       const newAnswer: Answer = {
         id: uuidv4(),
         question_id: questionId,
-        game_id: answer.gameId,
+        game_id: answer.game_id,
         isCorrect: answer.isCorrect,
         text: answer.text,
       };
@@ -60,9 +61,11 @@ class QuestionService {
     return answerCount;
   }
 
-  async getGameQuestions(gameId: string) {
-    const questions = await client.questions.findMany({ where: { game_id: gameId } });
-    const answers = await client.answers.findMany({ where: { game_id: gameId } });
+  async getGameQuestions(game_id: string) {
+    const questions = await client.questions.findMany({ where: { game_id: game_id } });
+    const answers = await client.answers.findMany({ where: { game_id: game_id } });
+
+    console.log(questions)
 
     const res: Array<QuestionModule> = [];
 
@@ -72,6 +75,21 @@ class QuestionService {
     });
 
     return res;
+  }
+
+  async updateQuestion(question: UpdatedQuestion) {
+    // check if question is new or being updated
+    if(question.id == null) {
+      console.log("question is brand new. must check for n")
+    }
+    else {
+      console.log("question is being updated");
+
+      question.answers.forEach((answer: UpdatedAnswer) => {
+        console.log(answer)
+      })
+    }
+    return 0
   }
 }
 

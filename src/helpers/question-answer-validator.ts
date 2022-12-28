@@ -1,8 +1,7 @@
 interface AnswerRequestObj {
   text: string;
   isCorrect: boolean;
-  gameId: string;
-  questionId: string | null;
+  game_id: string;
 }
 
 const QuestionAnswerValidator = (answers: Array<AnswerRequestObj>) => {
@@ -12,7 +11,6 @@ const QuestionAnswerValidator = (answers: Array<AnswerRequestObj>) => {
   answers.forEach((answer: AnswerRequestObj) => {
     if (isCorrect && answer.isCorrect) return false;
     if (!isCorrect) isCorrect = true;
-    //duplicate answers
     if (answerTexts.has(answer.text.toUpperCase())) return false;
 
     answerTexts.add(answer.text.toUpperCase());

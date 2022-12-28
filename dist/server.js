@@ -13,7 +13,7 @@ const io = new socket_io_1.Server(httpServer, {
 });
 io.on('connection', (socket) => {
     console.log('A user connected to the server');
-    (0, socket_service_1.default)(io, socket);
+    (0, socket_service_1.default)(socket);
 });
 const PORT = process.env.PORT || 7000;
 httpServer.listen(PORT);

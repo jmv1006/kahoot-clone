@@ -12,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGameQuestions = exports.createQuestions = void 0;
+exports.updateQuestions = exports.getGameQuestions = exports.createQuestions = void 0;
 const question_service_1 = __importDefault(require("../services/question-service"));
-const question_answer_1 = __importDefault(require("../config/joi-schemas/question-answer"));
+const question_answer_1 = require("../config/joi-schemas/question-answer");
 const question_answer_validator_1 = __importDefault(require("../helpers/question-answer-validator"));
 const questionService = question_service_1.default.getInstance();
 const createQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { error } = question_answer_1.default.validate(req.body);
+    const { error } = question_answer_1.NewQuestionSchema.validate(req.body);
     if (error)
         return res.status(400).json({ message: 'Invalid input' });
     const questions = req.body.questions;
@@ -31,13 +31,22 @@ const createQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function
     if (!answersValid)
         return res.status(400).json({ message: 'Provided answers are not correct' });
     questions.forEach((question) => __awaiter(void 0, void 0, void 0, function* () {
-        questionService.createQuestion({ gameId: question.gameId, text: question.text, numAnswers: 0 }, question.answers);
+        questionService.createQuestion({ game_id: question.game_id, text: question.text }, question.answers);
     }));
     return res.status(200).json({ message: 'Success' });
 });
 exports.createQuestions = createQuestions;
 const getGameQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const questionsAndAnswers = yield questionService.getGameQuestions(req.params.gameId);
+    const questionsAndAnswers = yield questionService.getGameQuestions(req.params.game_id);
     return res.status(200).json({ questions: questionsAndAnswers });
 });
 exports.getGameQuestions = getGameQuestions;
+const updateQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { error } = question_answer_1.UpdateQuestionsSchema.validate(req.body);
+    if (error)
+        return res.status(400).json({ message: 'Invalid input update' });
+    const body = req.body;
+    body.questions.forEach((question) => questionService.updateQuestion(question));
+    return res.send('Updated question');
+});
+exports.updateQuestions = updateQuestions;

@@ -8,7 +8,6 @@ const QuestionAnswerValidator = (answers) => {
             return false;
         if (!isCorrect)
             isCorrect = true;
-        //duplicate answers
         if (answerTexts.has(answer.text.toUpperCase()))
             return false;
         answerTexts.add(answer.text.toUpperCase());

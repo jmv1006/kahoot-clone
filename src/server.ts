@@ -10,7 +10,7 @@ const io = new Server(httpServer, {
 
 io.on('connection', (socket: Socket) => {
   console.log('A user connected to the server');
-  SocketService(io, socket);
+  SocketService(socket);
 });
 
 const PORT = process.env.PORT || 7000;

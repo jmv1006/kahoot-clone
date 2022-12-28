@@ -25,9 +25,9 @@ class QuestionService {
         return __awaiter(this, void 0, void 0, function* () {
             const newQuestion = {
                 id: (0, uuid_1.v4)(),
-                game_id: input.gameId,
+                game_id: input.game_id,
                 text: input.text,
-                num_answers: input.numAnswers,
+                num_answers: answers.length,
             };
             const answerCount = yield this.createAnswers(answers, newQuestion.id);
             newQuestion['num_answers'] = answerCount;
@@ -41,7 +41,7 @@ class QuestionService {
                 const newAnswer = {
                     id: (0, uuid_1.v4)(),
                     question_id: questionId,
-                    game_id: answer.gameId,
+                    game_id: answer.game_id,
                     isCorrect: answer.isCorrect,
                     text: answer.text,
                 };
@@ -51,16 +51,32 @@ class QuestionService {
             return answerCount;
         });
     }
-    getGameQuestions(gameId) {
+    getGameQuestions(game_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const questions = yield prisma_1.default.questions.findMany({ where: { game_id: gameId } });
-            const answers = yield prisma_1.default.answers.findMany({ where: { game_id: gameId } });
+            const questions = yield prisma_1.default.questions.findMany({ where: { game_id: game_id } });
+            const answers = yield prisma_1.default.answers.findMany({ where: { game_id: game_id } });
+            console.log(questions);
             const res = [];
             questions.forEach((question) => __awaiter(this, void 0, void 0, function* () {
                 const answersToQuestion = answers.filter((answer) => answer.question_id == question.id);
                 res.push({ question, answers: answersToQuestion });
             }));
             return res;
+        });
+    }
+    updateQuestion(question) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // check if question is new or being updated
+            if (question.id == null) {
+                console.log("question is brand new. must check for n");
+            }
+            else {
+                console.log("question is being updated");
+                question.answers.forEach((answer) => {
+                    console.log(answer);
+                });
+            }
+            return 0;
         });
     }
 }

@@ -2,8 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Question from '../config/interfaces/question';
 import Answer from '../config/interfaces/answer';
 import client from '../config/prisma';
-import { UpdatedAnswer, UpdatedQuestion } from '../config/interfaces/updated-question-answer';
-
+import { UpdatedQuestion } from '../config/interfaces/updated-question-answer';
 interface QuestionInput {
   game_id: string;
   text: string;
@@ -38,14 +37,12 @@ class QuestionService {
       num_answers: answers.length,
     };
 
-    const answerCount = await this.createAnswers(answers, newQuestion.id);
-    newQuestion['num_answers'] = answerCount;
     await client.questions.create({ data: newQuestion });
-
+    await this.createAnswers(answers, newQuestion.id);
     return newQuestion;
   }
 
-  private async createAnswers(answers: Array<AnswerInput>, questionId: string): Promise<number> {
+  private async createAnswers(answers: Array<AnswerInput>, questionId: string) {
     answers.forEach(async (answer: AnswerInput) => {
       const newAnswer: Answer = {
         id: uuidv4(),
@@ -56,16 +53,11 @@ class QuestionService {
       };
       await client.answers.create({ data: newAnswer });
     });
-
-    const answerCount = await client.answers.count({ where: { question_id: questionId } });
-    return answerCount;
   }
 
   async getGameQuestions(game_id: string) {
     const questions = await client.questions.findMany({ where: { game_id: game_id } });
     const answers = await client.answers.findMany({ where: { game_id: game_id } });
-
-    console.log(questions)
 
     const res: Array<QuestionModule> = [];
 
@@ -78,18 +70,9 @@ class QuestionService {
   }
 
   async updateQuestion(question: UpdatedQuestion) {
-    // check if question is new or being updated
-    if(question.id == null) {
-      console.log("question is brand new. must check for n")
-    }
-    else {
-      console.log("question is being updated");
+    console.log("question is being updated in some way")
 
-      question.answers.forEach((answer: UpdatedAnswer) => {
-        console.log(answer)
-      })
-    }
-    return 0
+    return 0;
   }
 }
 

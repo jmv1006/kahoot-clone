@@ -4,7 +4,7 @@ interface AnswerRequestObj {
   game_id: string;
 }
 
-const QuestionAnswerValidator = (answers: Array<AnswerRequestObj>) => {
+const QuestionAnswerValidator = (answers: Array<AnswerRequestObj>) : boolean => {
   let isCorrect = false;
   const answerTexts = new Set();
 

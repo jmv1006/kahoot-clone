@@ -56,7 +56,21 @@ export const updateQuestions = async (req: Request, res: Response) => {
 
   const body: UpdatedQuestionsRequestObj = req.body;
 
-  body.questions.forEach((question: UpdatedQuestion) => questionService.updateQuestion(question));
+  body.questions.forEach((question: UpdatedQuestion) => {
+    if(question.id == null) {
+      // adding a new question
+      let answersValid = true;
+      const valid = QuestionAnswerValidator(question.answers);
+      if (!valid) answersValid = false;
+      
+      if (!answersValid) return res.status(400).json({ message: 'Provided answers are not correct' });
+
+      questionService.createQuestion({ game_id: question.game_id, text: question.text }, question.answers);
+    } else {
+      //updating existing question
+      questionService.updateQuestion(question);
+    }
+  });
 
   return res.send('Updated question');
 };

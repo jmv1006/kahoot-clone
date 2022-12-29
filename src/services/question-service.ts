@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Question from '../config/interfaces/question';
 import Answer from '../config/interfaces/answer';
 import client from '../config/prisma';
-import { UpdatedQuestion } from '../config/interfaces/updated-question-answer';
+import { UpdatedAnswer, UpdatedQuestion } from '../config/interfaces/updated-question-answer';
 interface QuestionInput {
   game_id: string;
   text: string;
@@ -70,9 +70,29 @@ class QuestionService {
   }
 
   async updateQuestion(question: UpdatedQuestion) {
-    console.log("question is being updated in some way")
+    if(question.id != null) {
+      // check if question text needs to be updated
+      const originalText = await client.questions.findUnique({where: {id: question.id}});
+      if(originalText?.text != question.text) {
+        await client.questions.update({where: {id: question.id}, data: {text: question.text}});
+      }
 
-    return 0;
+      question.answers.forEach(async (answer: UpdatedAnswer) => {
+        if(answer.id == null && question.id != null) {
+          // new answer
+          await client.answers.create({data: {id: uuidv4(), question_id: question.id, game_id: question.game_id, isCorrect: answer.isCorrect, text: answer.text}})
+        } else {
+          // update existing answer
+          if(answer.id != null) {
+            const existingAnswer = await client.answers.findUnique({where: {id: answer.id}});
+            if (answer.text != existingAnswer?.text || answer.isCorrect != existingAnswer.isCorrect) await client.answers.update({where: {id: answer.id}, data: {text: answer.text, isCorrect: answer.isCorrect}})
+          }
+        }
+      });
+
+      const newAnswerCount = await client.answers.count({where : {question_id: question.id}});
+      await client.questions.update({where: {id: question.id}, data: {num_answers: newAnswerCount}});
+    }
   }
 }
 

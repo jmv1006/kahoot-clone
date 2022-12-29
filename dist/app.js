@@ -9,7 +9,7 @@ const game_1 = __importDefault(require("./routes/game"));
 const user_1 = __importDefault(require("./routes/user"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const app = (0, express_1.default)();
-const allowedOrigins = ['*'];
+const allowedOrigins = ['*', 'http://localhost:3000'];
 const options = {
     origin: allowedOrigins,
 };

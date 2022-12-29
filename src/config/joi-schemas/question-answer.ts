@@ -22,6 +22,7 @@ const UpdateQuestionsSchema = Joi.object({
     answers: Joi.array().items({
       id: Joi.string().allow(null),
       text: Joi.string().min(1).max(255).required(),
+      question_id: Joi.string().min(1).max(255),
       isCorrect: Joi.boolean().required(),
       game_id: Joi.string().required(),
     }),

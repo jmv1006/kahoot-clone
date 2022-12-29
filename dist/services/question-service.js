@@ -62,8 +62,29 @@ class QuestionService {
     }
     updateQuestion(question) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("question is being updated in some way");
-            return 0;
+            if (question.id != null) {
+                // check if question text needs to be updated
+                const originalText = yield prisma_1.default.questions.findUnique({ where: { id: question.id } });
+                if ((originalText === null || originalText === void 0 ? void 0 : originalText.text) != question.text) {
+                    yield prisma_1.default.questions.update({ where: { id: question.id }, data: { text: question.text } });
+                }
+                question.answers.forEach((answer) => __awaiter(this, void 0, void 0, function* () {
+                    if (answer.id == null && question.id != null) {
+                        // new answer
+                        yield prisma_1.default.answers.create({ data: { id: (0, uuid_1.v4)(), question_id: question.id, game_id: question.game_id, isCorrect: answer.isCorrect, text: answer.text } });
+                    }
+                    else {
+                        // update existing answer
+                        if (answer.id != null) {
+                            const existingAnswer = yield prisma_1.default.answers.findUnique({ where: { id: answer.id } });
+                            if (answer.text != (existingAnswer === null || existingAnswer === void 0 ? void 0 : existingAnswer.text) || answer.isCorrect != existingAnswer.isCorrect)
+                                yield prisma_1.default.answers.update({ where: { id: answer.id }, data: { text: answer.text, isCorrect: answer.isCorrect } });
+                        }
+                    }
+                }));
+                const newAnswerCount = yield prisma_1.default.answers.count({ where: { question_id: question.id } });
+                yield prisma_1.default.questions.update({ where: { id: question.id }, data: { num_answers: newAnswerCount } });
+            }
         });
     }
 }

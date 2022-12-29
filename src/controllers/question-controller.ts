@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import QuestionService from '../services/question-service';
 import { NewQuestionSchema, UpdateQuestionsSchema } from '../config/joi-schemas/question-answer';
 import QuestionAnswerValidator from '../helpers/question-answer-validator';
-import { UpdatedQuestion } from '../config/interfaces/updated-question-answer';
+import { UpdatedQuestion, UpdatedAnswer } from '../config/interfaces/updated-question-answer';
+import handleUpdatedAnswers from '../helpers/handle-updated-answers';
 
 interface NewAnswerRequestObj {
   text: string;
@@ -35,7 +36,7 @@ export const createQuestions = async (req: Request, res: Response) => {
     if (!valid) answersValid = false;
   });
 
-  if (!answersValid) return res.status(400).json({ message: 'Provided answers are not correct' });
+  if (!answersValid) return res.status(400).json({ message: 'There must be at least one correct answer and no duplicates.' });
 
   questions.forEach(async (question: NewQuestionRequestObj) => {
     questionService.createQuestion({ game_id: question.game_id, text: question.text }, question.answers);
@@ -56,21 +57,18 @@ export const updateQuestions = async (req: Request, res: Response) => {
 
   const body: UpdatedQuestionsRequestObj = req.body;
 
-  body.questions.forEach((question: UpdatedQuestion) => {
+  body.questions.forEach(async (question: UpdatedQuestion) => {
     if(question.id == null) {
-      // adding a new question
-      let answersValid = true;
-      const valid = QuestionAnswerValidator(question.answers);
-      if (!valid) answersValid = false;
-      
-      if (!answersValid) return res.status(400).json({ message: 'Provided answers are not correct' });
-
+      //If the question does not have an id, it is a new one
+      const valid = QuestionAnswerValidator(question.answers.map((answer : UpdatedAnswer) => {return {isCorrect: answer.isCorrect, text: answer.text, game_id: answer.game_id}}));
+      if (!valid) return res.status(400).json({ message: 'There must be at least one correct answer and no duplicates.' });
       questionService.createQuestion({ game_id: question.game_id, text: question.text }, question.answers);
     } else {
-      //updating existing question
-      questionService.updateQuestion(question);
+      //question exists
+      const valid = await handleUpdatedAnswers(question.answers.map((answer: UpdatedAnswer) => {return  {isCorrect: answer.isCorrect, text: answer.text, game_id: answer.game_id, id: answer.id}}), question.id);
+      if(!valid) return res.status(400).json({ message: 'There must be at least one correct answer and no duplicates.' });
+      await questionService.updateQuestion(question);
     }
   });
-
-  return res.send('Updated question');
+  res.status(200).json({"message" : "Successfully updated question(s)."})
 };

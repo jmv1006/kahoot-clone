@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 
 const app = express();
 
-const allowedOrigins = ['*'];
+const allowedOrigins = ['*', 'http://localhost:3000'];
 
 const options: cors.CorsOptions = {
   origin: allowedOrigins,

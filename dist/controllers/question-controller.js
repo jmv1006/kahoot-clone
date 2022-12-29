@@ -16,6 +16,7 @@ exports.updateQuestions = exports.getGameQuestions = exports.createQuestions = v
 const question_service_1 = __importDefault(require("../services/question-service"));
 const question_answer_1 = require("../config/joi-schemas/question-answer");
 const question_answer_validator_1 = __importDefault(require("../helpers/question-answer-validator"));
+const handle_updated_answers_1 = __importDefault(require("../helpers/handle-updated-answers"));
 const questionService = question_service_1.default.getInstance();
 const createQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { error } = question_answer_1.NewQuestionSchema.validate(req.body);
@@ -29,7 +30,7 @@ const createQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function
             answersValid = false;
     });
     if (!answersValid)
-        return res.status(400).json({ message: 'Provided answers are not correct' });
+        return res.status(400).json({ message: 'There must be at least one correct answer and no duplicates.' });
     questions.forEach((question) => __awaiter(void 0, void 0, void 0, function* () {
         questionService.createQuestion({ game_id: question.game_id, text: question.text }, question.answers);
     }));
@@ -46,22 +47,22 @@ const updateQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function
     if (error)
         return res.status(400).json({ message: 'Invalid input update' });
     const body = req.body;
-    body.questions.forEach((question) => {
+    body.questions.forEach((question) => __awaiter(void 0, void 0, void 0, function* () {
         if (question.id == null) {
-            // adding a new question
-            let answersValid = true;
-            const valid = (0, question_answer_validator_1.default)(question.answers);
+            //If the question does not have an id, it is a new one
+            const valid = (0, question_answer_validator_1.default)(question.answers.map((answer) => { return { isCorrect: answer.isCorrect, text: answer.text, game_id: answer.game_id }; }));
             if (!valid)
-                answersValid = false;
-            if (!answersValid)
-                return res.status(400).json({ message: 'Provided answers are not correct' });
+                return res.status(400).json({ message: 'There must be at least one correct answer and no duplicates.' });
             questionService.createQuestion({ game_id: question.game_id, text: question.text }, question.answers);
         }
         else {
-            //updating existing question
-            questionService.updateQuestion(question);
+            //question exists
+            const valid = yield (0, handle_updated_answers_1.default)(question.answers.map((answer) => { return { isCorrect: answer.isCorrect, text: answer.text, game_id: answer.game_id, id: answer.id }; }), question.id);
+            if (!valid)
+                return res.status(400).json({ message: 'There must be at least one correct answer and no duplicates.' });
+            yield questionService.updateQuestion(question);
         }
-    });
-    return res.send('Updated question');
+    }));
+    res.status(200).json({ "message": "Successfully updated question(s)." });
 });
 exports.updateQuestions = updateQuestions;

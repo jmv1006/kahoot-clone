@@ -1,12 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// checks to see if given answer set has at least one true answer
 const QuestionAnswerValidator = (answers) => {
     let isCorrect = false;
     const answerTexts = new Set();
     answers.forEach((answer) => {
-        if (isCorrect && answer.isCorrect)
-            return false;
-        if (!isCorrect)
+        if (answer.isCorrect)
             isCorrect = true;
         if (answerTexts.has(answer.text.toUpperCase()))
             return false;

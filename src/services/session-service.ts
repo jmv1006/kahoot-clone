@@ -1,38 +1,26 @@
-import { Socket } from "socket.io";
-import gameIdentifier from "../config/interfaces/game-identifier";
-
-interface joinIdentifier {
-    user_id : string,
-    sessionId: string
-}
-  
+import client from "../config/prisma";
+import { v4 as uuidv4 } from 'uuid';
+import { Server } from "socket.io";
+import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from '../config/interfaces/socketio';
 
 class SessionService {
-    private static instance: SessionService;
-    socket : Socket;
+    serverObject : Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
 
-    public static getInstance(socket: Socket): SessionService {
-      if (!this.instance) {
-        SessionService.instance = new SessionService(socket);
-      }
-      return this.instance;
+    constructor(io : Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>) {
+        this.serverObject = io;
     }
 
-    constructor(socket : Socket) {
-        this.socket = socket;
+    async createSession(creatorId : string, gameId : string) {
+        const userExists = await client.users.findUnique({where: {id: creatorId}});
+        const gameExists = await client.games.findUnique({where: {id: gameId}});
+        if(!userExists || !gameExists)  return {successful : true, sessionId: null, gameInfo: null};
+  
+        // create a session
+        const newSessionId = uuidv4();
+        // here is where i would save the session somewhere
+        return {successful : true, sessionId: newSessionId, gameInfo: {gameId, numQuestions: gameExists.numQuestions, title: gameExists.title}};
     }
 
-    joinGame = async ({user_id, sessionId} : joinIdentifier) => {
-        if(sessionId == "fake") {
-          //successful
-          const gameInfo : gameIdentifier = {id: "1234", numQuestions: 5};
-          const responseObj = {"successful" : true, identifier: {sessionId: "id_by_server", currentQuestion: 0, gameInfo: gameInfo}};
-          this.socket.emit('gameIdentifier', responseObj);
-        } else {
-          const invalidResponseObj = {"successful" : false, identifier: {sessionId: null, currentQuestion: 0, gameInfo: null}};
-          this.socket.emit('gameIdentifier', invalidResponseObj);
-        }
-      }
 }
 
 export default SessionService;

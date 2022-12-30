@@ -1,15 +1,38 @@
 import { Socket } from 'socket.io';
+import gameIdentifier from '../config/interfaces/game-identifier';
 import SessionService from './session-service';
 
-const SocketService = (socket: Socket) => {
-  const sessionService = SessionService.getInstance(socket);
+interface SessionCreationObj {
+  creatorId: string,
+  gameId: string
+}
 
-  const initialize = (user_id : string) => {
+const SocketService = (socket: Socket, sessionService : SessionService) => {
+
+  const initialize = () => {
     socket.emit("initializationConfirmation", "success")
   }
 
-  socket.on('initialize', initialize)
-  socket.on('join-game', sessionService.joinGame)
+  const socketJoinSession = async (sessionId: string) => {
+    if(sessionId == "fake") {
+      //successful
+      const gameInfo : gameIdentifier = {id: "1234", numQuestions: 5};
+      const responseObj = {"successful" : true, identifier: {sessionId: "id_by_server", currentQuestion: 0, gameInfo: gameInfo}};
+      socket.emit('gameIdentifier', responseObj);
+    } else {
+      const invalidResponseObj = {"successful" : false, identifier: {sessionId: null, currentQuestion: 0, gameInfo: null}};
+      socket.emit('gameIdentifier', invalidResponseObj);
+    }
+};
+
+  const createSession = async ({creatorId, gameId} : SessionCreationObj) => {
+      const createdSession = await sessionService.createSession(creatorId, gameId);
+      socket.emit('session-creation-response', createdSession);
+  }
+
+  socket.on('initialize', initialize);
+  socket.on('join-session', socketJoinSession);
+  socket.on('create-session', createSession);
   socket.on('disconnect', () => console.log('a user disconnected'));
 };
 

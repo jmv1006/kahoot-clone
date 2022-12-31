@@ -9,22 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const redis_config_1 = require("../config/redis/redis.config");
+const redisClient = (0, redis_config_1.getClient)();
 const SocketService = (socket, sessionService) => {
     const initialize = () => {
         socket.emit("initializationConfirmation", "success");
     };
     const socketJoinSession = (sessionId) => __awaiter(void 0, void 0, void 0, function* () {
-        // check active sessions and see if the provided sessionId aligns with an active session
-        if (sessionId == "fake") {
-            //successful
-            const gameInfo = { id: "1234", numQuestions: 5, title: "fake" };
-            const responseObj = { "successful": true, identifier: { sessionId: "id_by_server", currentQuestion: 0, gameInfo: gameInfo } };
-            socket.emit('gameIdentifier', responseObj);
-        }
-        else {
-            const invalidResponseObj = { "successful": false, identifier: { sessionId: null, currentQuestion: 0, gameInfo: null } };
-            socket.emit('gameIdentifier', invalidResponseObj);
-        }
+        const exists = yield redisClient.get(sessionId);
+        if (!exists)
+            return socket.emit('session-join-response', { sucessful: false, identifier: null });
+        const identifierObj = JSON.parse(exists);
+        return socket.emit('session-join-response', { successful: true, identifier: identifierObj });
     });
     const createSession = ({ creatorId, gameId }) => __awaiter(void 0, void 0, void 0, function* () {
         const createdSession = yield sessionService.createSession(creatorId, gameId);

@@ -38,6 +38,7 @@ class SessionService {
                 }
             };
             // here is where i would save the session somewhere
+            yield redisClient.setEx(newSessionId, 600, JSON.stringify(identifier));
             return { successful: true, identifier };
         });
     }

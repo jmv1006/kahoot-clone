@@ -25,15 +25,23 @@ class SessionService {
         const identifier : SessionIdentifier = {
             sessionId: newSessionId,
             currentQuestion: 0,
+            creatorId,
             gameInfo: {
                 numQuestions: gameExists.numQuestions,
                 id: gameExists.id,
                 title: gameExists.title
             }
         }
+
         // here is where i would save the session somewhere
+        await redisClient.setEx(newSessionId, 600, JSON.stringify(identifier));
 
         return {successful : true, identifier};
+    }
+
+
+    async sendUpdatedSessionInfo(sessionId : string, sessionObj : SessionIdentifier) {
+        this.serverObject.to(sessionId).emit('updated-session-info', sessionObj);
     }
 
 }

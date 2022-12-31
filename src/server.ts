@@ -4,6 +4,9 @@ import { Server, Socket } from 'socket.io';
 import SocketService from './services/socket-service';
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from './config/interfaces/socketio';
 import SessionService from './services/session-service';
+import { connectToRedis } from './config/redis/redis.config';
+
+connectToRedis();
 
 const httpServer = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {

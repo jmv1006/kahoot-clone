@@ -14,31 +14,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_1 = __importDefault(require("../config/prisma"));
 const uuid_1 = require("uuid");
+const redis_config_1 = require("../config/redis/redis.config");
+const redisClient = (0, redis_config_1.getClient)();
 class SessionService {
-    constructor(socket) {
-        this.joinSession = (sessionId) => __awaiter(this, void 0, void 0, function* () {
-            if (sessionId == "fake") {
-                //successful
-                const gameInfo = { id: "1234", numQuestions: 5 };
-                const responseObj = { "successful": true, identifier: { sessionId: "id_by_server", currentQuestion: 0, gameInfo: gameInfo } };
-                this.socket.emit('gameIdentifier', responseObj);
-            }
-            else {
-                const invalidResponseObj = { "successful": false, identifier: { sessionId: null, currentQuestion: 0, gameInfo: null } };
-                this.socket.emit('gameIdentifier', invalidResponseObj);
-            }
-        });
-        this.createSession = ({ creatorId, gameId }) => __awaiter(this, void 0, void 0, function* () {
-            // verify that game creator id is valid
+    constructor(io) {
+        this.serverObject = io;
+    }
+    createSession(creatorId, gameId) {
+        return __awaiter(this, void 0, void 0, function* () {
             const userExists = yield prisma_1.default.users.findUnique({ where: { id: creatorId } });
             const gameExists = yield prisma_1.default.games.findUnique({ where: { id: gameId } });
             if (!userExists || !gameExists)
-                return this.socket.emit('session-creation-response', { successful: false, id: null });
+                return { successful: true, sessionId: null, gameInfo: null };
             // create a session
             const newSessionId = (0, uuid_1.v4)();
-            this.socket.emit('session-creation-response', { successful: true, sessionId: newSessionId, gameInfo: { gameId, numQuestions: gameExists.numQuestions, title: gameExists.title } });
+            const identifier = {
+                sessionId: newSessionId,
+                currentQuestion: 0,
+                gameInfo: {
+                    numQuestions: gameExists.numQuestions,
+                    id: gameExists.id,
+                    title: gameExists.title
+                }
+            };
+            // here is where i would save the session somewhere
+            return { successful: true, identifier };
         });
-        this.socket = socket;
     }
 }
 exports.default = SessionService;

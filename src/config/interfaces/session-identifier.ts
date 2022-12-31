@@ -1,10 +1,10 @@
 import gameIdentifier from "./game-identifier";
 
-interface sessionIdentifier {
+interface SessionIdentifier {
     sessionId: string,
     currentQuestion: number,
     gameInfo: gameIdentifier | null
 }
 
-export default sessionIdentifier
+export default SessionIdentifier
 

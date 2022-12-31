@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import gameIdentifier from '../config/interfaces/game-identifier';
+import SessionIdentifier from '../config/interfaces/session-identifier';
 import SessionService from './session-service';
 
 interface SessionCreationObj {
@@ -14,16 +14,18 @@ const SocketService = (socket: Socket, sessionService : SessionService) => {
   }
 
   const socketJoinSession = async (sessionId: string) => {
-    if(sessionId == "fake") {
-      //successful
-      const gameInfo : gameIdentifier = {id: "1234", numQuestions: 5};
-      const responseObj = {"successful" : true, identifier: {sessionId: "id_by_server", currentQuestion: 0, gameInfo: gameInfo}};
-      socket.emit('gameIdentifier', responseObj);
-    } else {
-      const invalidResponseObj = {"successful" : false, identifier: {sessionId: null, currentQuestion: 0, gameInfo: null}};
-      socket.emit('gameIdentifier', invalidResponseObj);
-    }
-};
+    const fakeIdentifier : SessionIdentifier = {
+      sessionId: '1234',
+      currentQuestion: 0,
+      gameInfo: {
+        title: "Fake game",
+        id: "12223",
+        numQuestions: 0
+      }
+    };
+    
+    return 0
+  };
 
   const createSession = async ({creatorId, gameId} : SessionCreationObj) => {
       const createdSession = await sessionService.createSession(creatorId, gameId);

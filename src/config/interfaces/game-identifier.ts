@@ -1,6 +1,7 @@
 interface gameIdentifier {
     id: string,
-    numQuestions: number
+    numQuestions: number,
+    title: string
 }
 
 export default gameIdentifier
